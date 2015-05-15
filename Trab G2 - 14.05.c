@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define MAX 3
+
 typedef struct media
 {
     int ind_baixa;
@@ -65,9 +67,8 @@ void print_aluno( t_aluno a1[] , int ctd)
 
 }
 
-
 int cadastra_aluno (t_aluno aluno[] , int ctd, int ctd2)
-{
+{   float nota;
     int matricula,i,j;
     if(ctd2 ==1)
     {
@@ -95,7 +96,13 @@ int cadastra_aluno (t_aluno aluno[] , int ctd, int ctd2)
     for(j=0; j<3; j++)
     {
         printf("Informe a nota %d: ",j+1);
-        scanf("%f",&aluno[ctd].nota[j]);
+        scanf("%f",&nota);
+        if(nota<0 || nota >10){
+            printf("Nota invalida!!!!!\n");
+            return 0;
+        }else{
+        aluno[ctd].nota[j]=nota;
+        }
     }
 
     ctd++;
@@ -156,48 +163,57 @@ int buscar_matricula (t_aluno a1[], int ctd)
     }
     return controlador;
 }
+void media_aluno(t_aluno a1[],int ctd,float media[]){
+int i,j;
+    for(i=0;i<ctd;i++){
+        for(j=0;j<MAX;j++){
+             media[i]=media[i]+a1[i].nota[j];
+        }
+        media[i]=media[i]/MAX;
+    }
+
+}
 int Calc_estat_turma (t_aluno a1[], int ctd)
 {
     t_media media;
+    float media2[ctd];
+    int i,f,g,h;
     media.nota_alta=0;
     media.nota_baixa=10;
-    int i,f,g,h;
-
-    for(h=0; h<ctd; h++)
-    {
-        a1[h].nota[3]=(a1[h].nota[0]+a1[h].nota[1]+a1[h].nota[2])/3;
-    }
-
     float cont1=0,cont2=0,cont3=0;
-    for(f=0; f<ctd; f++)
-    {
-        if(media.nota_alta<a1[f].nota[3])
-        {
-            media.nota_alta=a1[f].nota[3];
-            media.ind_alta=f;
-        }
+    for(i=0;i<ctd;i++){
+    media2[i]= 0;
     }
+    media_aluno(a1,ctd,media2);
+
+        for(f=0;f<ctd;f++){
+            if(media.nota_alta<media2[f])
+            {
+             media.nota_alta=media2[f];
+             media.ind_alta=f;
+            }
+        }
 
     for(g=0; g<ctd; g++)
     {
-        if(media.nota_baixa>a1[g].nota[3])
+        if(media.nota_baixa>media2[g])
         {
-            media.nota_baixa=a1[g].nota[3];
+            media.nota_baixa=media2[g];
             media.ind_baixa=g;
         }
     }
 
     for(i=0; i<ctd; i++)
     {
-        if(a1[i].nota[3]<=5)
+        if(media2[i]<=5)
         {
             cont1++;
         }
-        else  if(a1[i].nota[3]<=8)
+        else  if(media2[i]<=8)
         {
             cont2++;
         }
-        else  if(a1[i].nota[3]<=10)
+        else  if(media2[i]<=10)
         {
             cont3++;
         }
@@ -217,6 +233,7 @@ int Calc_estat_turma (t_aluno a1[], int ctd)
 
     printf("8,1-10 -> %.2f %%\n\n\n",cont3);
 }
+
 int editar_matricula (t_aluno a1[], int ctd)
 {
     int idade,opt,i=1,controlador,controlador2,ctd2=0;
@@ -248,6 +265,7 @@ int editar_matricula (t_aluno a1[], int ctd)
 
     }
 }
+
 void BubbleSort_idade(t_aluno vetor[], int tamanho)
 {
     int aux, i,l;
@@ -275,6 +293,7 @@ void BubbleSort_idade(t_aluno vetor[], int tamanho)
     }
 
 }
+
 void BubbleSort_matricula(t_aluno vetor[], int tamanho)
 {
     int aux, i,l;
@@ -301,6 +320,7 @@ void BubbleSort_matricula(t_aluno vetor[], int tamanho)
     }
 
 }
+
 void BubbleSort_nome(t_aluno vetor[], int tamanho)
 {
     int i,j;
@@ -324,6 +344,7 @@ void BubbleSort_nome(t_aluno vetor[], int tamanho)
         puts(vetor[i].nome);
     }
 }
+
 void BubbleSort_endereco(t_aluno vetor[], int tamanho)
 {
     int i,j;
@@ -353,6 +374,7 @@ void BubbleSort_endereco(t_aluno vetor[], int tamanho)
         puts(vetor[i].endereco);
     }
 }
+
 int main()
 {
     int ctd2= 1;
