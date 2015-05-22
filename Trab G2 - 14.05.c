@@ -67,10 +67,10 @@ void print_aluno( t_aluno a1[] , int ctd)
 
 }
 
-int cadastra_aluno (t_aluno aluno[] , int ctd, int ctd2)
+void cadastra_aluno (t_aluno aluno[] , int ctd, int verif_matricula)
 {   float nota;
     int matricula,i,j;
-    if(ctd2 ==1)
+    if(verif_matricula ==1)
     {
         printf("Informe a matricula do aluno: \n");
         scanf("%d", &matricula);
@@ -105,8 +105,8 @@ int cadastra_aluno (t_aluno aluno[] , int ctd, int ctd2)
         }
     }
 
-    ctd++;
-    return ctd;
+
+
 }
 
 int menu_ordenar()
@@ -124,45 +124,34 @@ int menu ()
 {
     int opt;
     printf("##MENU##\n\n1-Cadastrar aluno\n");
-    printf("2-Procurar por matricula\n");
-    printf("3-Listar todos alunos cadastrados\n");
-    printf("4-Editar dados do aluno\n");
-    printf("5-Excluir aluno \n");
-    printf("6-Listar alunos de forma ordenada \n");
-    printf("7-Calcular estatistica da turma\n");
+    printf("2-Listar todos alunos cadastrados\n");
+    printf("3-Editar dados do aluno\n");
+    printf("4-Excluir aluno \n");
+    printf("5-Listar alunos de forma ordenada \n");
+    printf("6-Calcular estatistica da turma\n");
     printf("0-para sair\n\n## ##\n->");
     scanf("%d",&opt);
     return opt;
 }
 
-int buscar_matricula (t_aluno a1[], int ctd)
+int buscar_matricula (t_aluno a1[], int ctd, int matricula)
 {
-    int matricula,i,controlador= 21;
+    int i;
 
-    printf("Informe a matricula: ");
-    scanf("%d",&matricula);
+
     for (i=0; i<ctd; i++)
     {
         if (matricula==a1[i].matricula)
         {
-            controlador=i;
+            print_aluno(a1,i);
+            return i;
         }
     }
-    if(controlador==21)
-    {
-        printf("Matricula nao cadastrada!!!!\n");
-        return controlador;
-    }
-    else
-    {
-        printf("Nome: %s \n", a1[controlador].nome);
-        printf("Idade: %d \n", a1[controlador].idade);
-        printf("Matricula: %d \n", a1[controlador].matricula);
-        printf("Endereco: %s \n", a1[controlador].endereco);
-        printf("--------------------------------\n");
-    }
-    return controlador;
+
+
+    return -1;
 }
+
 void media_aluno(t_aluno a1[],int ctd,float media[]){
 int i,j;
     for(i=0;i<ctd;i++){
@@ -173,6 +162,7 @@ int i,j;
     }
 
 }
+
 int Calc_estat_turma (t_aluno a1[], int ctd)
 {
     t_media media;
@@ -236,24 +226,32 @@ int Calc_estat_turma (t_aluno a1[], int ctd)
 
 int editar_matricula (t_aluno a1[], int ctd)
 {
-    int idade,opt,i=1,controlador,controlador2,ctd2=0;
+    int i,idade,matricula,indice;
     t_aluno aux[20];
     char escolha;
-    controlador=buscar_matricula(a1,ctd);
-    if (controlador == 21)
+    printf("Informe a matricula: ");
+    scanf("%d",&matricula);
+    indice=buscar_matricula(a1,ctd,matricula);
+    if (indice == -1)
     {
+        printf("Matricula nao cadastrada!!!!!\n");
         return 0;
     }
     else
     {
-        cadastra_aluno(aux,controlador,ctd2);
-        printf("Voce deseja confirmar a alteracao? (s=sim - n=nao)");
-        scanf("%c",&escolha);
-        if(escolha=='s')
+        cadastra_aluno(aux,ctd,0);
+        printf("Voce deseja confirmar a alteracao? (s=sim - n=nao) ");
+        scanf("%s",&escolha);
+        printf("indice: %d",indice);
+        puts(aux[indice].endereco);
+        if(escolha=='s' || escolha== 'S')
         {
-            strcpy(a1[controlador].nome,aux[controlador].nome);
-            a1[controlador].idade=aux[controlador].idade;
-            strcpy(a1[controlador].endereco,aux[controlador].endereco);
+            strcpy(a1[indice].nome,aux[indice+1].nome);
+            a1[indice].idade=aux[indice+1].idade;
+            strcpy(a1[indice].endereco,aux[indice+1].endereco);
+            for(i=0;i<MAX;i++){
+                a1[indice].nota[i]=aux[indice+1].nota[i];
+            }
             printf("Operacao concluida!!!!!\n");
 
         }
@@ -377,7 +375,6 @@ void BubbleSort_endereco(t_aluno vetor[], int tamanho)
 
 int main()
 {
-    int ctd2= 1;
     int ctd = 0;
     t_aluno a1[20];
     int opt,opt_ordenar;
@@ -388,32 +385,30 @@ int main()
         switch (opt)
         {
         case 1:
-            ctd=cadastra_aluno(a1,ctd,ctd2);
+            cadastra_aluno(a1,ctd,1);
+            ctd++;
             system("pause");
             system("cls");
             break;
+
+
         case 2:
-            buscar_matricula(a1,ctd);
-            system("pause");
-            system("cls");
-            break;
-        case 3:
 
             mostrar_aluno(a1,ctd);
             system("pause");
             system("cls");
             break;
-        case 4:
+        case 3:
             editar_matricula(a1,ctd);
             system("pause");
             system("cls");
             break;
-        case 5:
+        case 4:
             ctd=deleta_aluno(a1,ctd);
             system("pause");
             system("cls");
             break;
-        case 6:
+        case 5:
             opt_ordenar=menu_ordenar();
 
             switch(opt_ordenar)
@@ -448,7 +443,7 @@ int main()
             system("pause");
             system("cls");
             break;
-        case 7:
+        case 6:
             Calc_estat_turma(a1,ctd);
             system("pause");
             system("cls");
